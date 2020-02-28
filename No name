@@ -1,0 +1,24 @@
+SELECT c.nombre
+FROM ComponenteProvisto cprov, Componente c 
+WHERE cprov.idComponente=c.idComponente
+AND c.idComponente IN
+	(SELECT idComponente
+	FROM CompuestoPor
+	WHERE idArtefacto IN
+		(SELECT idArtefacto
+		FROM Artefacto
+		WHERE 
+			(idCategoria = 
+				(SELECT idCategoria
+				FROM Categoria
+				WHERE UPPER(nombre) = "PERIFERICOS"))
+		AND
+			(precio = 
+				(SELECT MIN(precio)
+				FROM Artefacto a, Categoria c
+				WHERE a.idCategoria=c.idCategoria
+				AND UPPER(c.nombre) = "PERIFERICOS")) 	
+		)
+	)
+GROUP BY cprov.idComponente
+HAVING COUNT(*)>4
